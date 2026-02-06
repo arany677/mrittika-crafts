@@ -11,11 +11,17 @@ namespace mrittika.Server.Controllers
         public BlogsController(ApplicationDbContext context) { _context = context; }
 
         [HttpGet]
-        public IActionResult GetApprovedBlogs()
+        public IActionResult GetBlogs()
         {
-            // Only show blogs that Admin has approved
-            var blogs = _context.Blogs.Where(b => b.IsApproved == true).ToList();
-            return Ok(blogs);
+            try
+            {
+                var blogs = _context.Blogs.Where(b => b.IsApproved).ToList();
+                return Ok(blogs);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Database Error: {ex.Message}");
+            }
         }
     }
 }

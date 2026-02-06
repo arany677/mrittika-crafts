@@ -15,5 +15,6 @@ namespace mrittika.Server.Data
         // This line tells the database to create a table called "Products"
         public DbSet<Product> Products { get; set; }
         public DbSet<Blog> Blogs { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
