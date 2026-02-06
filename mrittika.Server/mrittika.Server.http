@@ -1,0 +1,6 @@
+@mrittika.Server_HostAddress = http://localhost:5010
+
+GET {{mrittika.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

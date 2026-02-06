@@ -1,0 +1,17 @@
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# Build folders
+bin/
+obj/
+
+# Node/React files
+node_modules/
+dist/
+.env
+
+# Other
+.DS_Store

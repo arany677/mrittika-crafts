@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="mrittika.client/mrittika.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="mrittika.Server/mrittika.Server.csproj" />
+</Solution>
