@@ -52,5 +52,40 @@ namespace mrittika.Server.Controllers
             public string Email { get; set; } = string.Empty;
             public string Password { get; set; } = string.Empty;
         }
+        // 1. Get all sellers who are NOT verified yet
+        [HttpGet("pending-sellers")]
+        public IActionResult GetPendingSellers()
+        {
+            try
+            {
+                var pending = _context.Users
+                    .Where(u => u.Role == "Seller" && u.IsVerified == false)
+                    .ToList();
+                return Ok(pending);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        // 2. Approve a seller by their ID
+        [HttpPost("approve-seller/{id}")]
+        public IActionResult ApproveSeller(int id)
+        {
+            try
+            {
+                var user = _context.Users.Find(id);
+                if (user == null) return NotFound("User not found");
+
+                user.IsVerified = true;
+                _context.SaveChanges();
+                return Ok(new { message = "Seller approved successfully!" });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

@@ -10,7 +10,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
-// Simple routing for development
+// --- CRITICAL ORDER ---
+app.UseDefaultFiles(); // Add this
+app.UseStaticFiles();  // This allows the browser to see the wwwroot/uploads folder
+
+app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
 
