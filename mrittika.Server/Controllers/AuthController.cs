@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mrittika.Server.Data;
 using mrittika.Server.Models;
+using System.Linq;
 
 namespace mrittika.Server.Controllers
 {
@@ -9,7 +10,11 @@ namespace mrittika.Server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public AuthController(ApplicationDbContext context) { _context = context; }
+
+        public AuthController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
         [HttpPost("register")]
         public IActionResult Register([FromBody] User user)
@@ -17,8 +22,9 @@ namespace mrittika.Server.Controllers
             try
             {
                 if (_context.Users.Any(u => u.Email == user.Email))
-                    return BadRequest(new { message = "Email already exists." }); // JSON object
+                    return BadRequest(new { message = "Email already exists." });
 
+                // Set Buyer to verified by default, Seller needs Admin
                 user.IsVerified = (user.Role == "Buyer");
                 _context.Users.Add(user);
                 _context.SaveChanges();
@@ -26,14 +32,13 @@ namespace mrittika.Server.Controllers
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = $"DB Error: {ex.Message}" });
+                return StatusCode(500, new { message = ex.Message });
             }
         }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            // Admin Hardcoded Check
             if (request.Email == "admin@mrittika.com" && request.Password == "admin6240")
                 return Ok(new { name = "Admin", role = "Admin" });
 
@@ -43,40 +48,38 @@ namespace mrittika.Server.Controllers
                 return Unauthorized(new { message = "Invalid email or password." });
 
             if (user.Role == "Seller" && !user.IsVerified)
-                return BadRequest(new { message = "Pending Admin approval." }); // JSON object
+                return BadRequest(new { message = "Pending Admin approval." });
 
             return Ok(new { name = user.Name, role = user.Role });
         }
-        public class LoginRequest
-        {
-            public string Email { get; set; } = string.Empty;
-            public string Password { get; set; } = string.Empty;
-        }
-        // 1. Get all sellers who are NOT verified yet
+
         [HttpGet("pending-sellers")]
         public IActionResult GetPendingSellers()
         {
             try
             {
+                // 1. We must make sure the query is looking for exactly what is in your DB
+                // If your DB has "Seller", ToLower() handles it.
                 var pending = _context.Users
-                    .Where(u => u.Role == "Seller" && u.IsVerified == false)
+                    .Where(u => u.Role != null && u.Role.ToLower() == "seller" && u.IsVerified == false)
                     .ToList();
+
                 return Ok(pending);
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                // This will show you the exact error in the "Output" window of VS
+                return StatusCode(500, new { message = ex.Message });
             }
         }
 
-        // 2. Approve a seller by their ID
         [HttpPost("approve-seller/{id}")]
         public IActionResult ApproveSeller(int id)
         {
             try
             {
                 var user = _context.Users.Find(id);
-                if (user == null) return NotFound("User not found");
+                if (user == null) return NotFound(new { message = "User not found" });
 
                 user.IsVerified = true;
                 _context.SaveChanges();
@@ -84,8 +87,14 @@ namespace mrittika.Server.Controllers
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { message = ex.Message });
             }
         }
+    }
+
+    public class LoginRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
