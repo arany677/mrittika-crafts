@@ -3,41 +3,41 @@ using mrittika.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// 1. Add services
 builder.Services.AddControllers();
+
+// Ensure the ConnectionString name matches EXACTLY with appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 
-// --- CRITICAL ORDER ---
-app.UseDefaultFiles(); // Add this
-app.UseStaticFiles();  // This allows the browser to see the wwwroot/uploads folder
-
+// 2. Middleware
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
-// Inside Program.cs, just before app.Run();
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<mrittika.Server.Data.ApplicationDbContext>();
 
-    // Check if there are already blogs
-    if (!context.Blogs.Any())
+// 3. SEEDING/MIGRATION CHECK
+// This block ensures seeding ONLY happens if we are NOT running a migration command
+if (args.Length == 0 || !args[0].Contains("migrations"))
+{
+    using (var scope = app.Services.CreateScope())
     {
-        context.Blogs.AddRange(
-            new mrittika.Server.Models.Blog
-            {
-                Title = "Team Post: Handcrafted Clay",
-                Content = "This is a shared post for the whole team to see.",
-                AuthorName = "System",
-                ImageUrl = "/hero1.jpg", // Use an image already in public/
-                IsApproved = true,
-                CreatedAt = DateTime.Now
-            }
-        );
-        context.SaveChanges();
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            // Just ensure created, don't run complex logic here during Build
+            context.Database.EnsureCreated();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Startup Error: " + ex.Message);
+        }
     }
 }
 
