@@ -15,6 +15,7 @@ import Login from './pages/Login.jsx';
 import AdminDashboard from './pages/AdminDashboard';
 import CreatePost from './pages/CreatePost';
 import PostDetail from './pages/PostDetail';
+import AdminCreateProfile from './pages/AdminCreateProfile';
 
 function App() {
     const location = useLocation();
@@ -53,6 +54,7 @@ function App() {
                     <Route path="/login" element={<Login onLoginSuccess={handleLogin} />} />
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/create-post" element={<CreatePost user={user} />} />
+                    <Route path="/admin/profiles" element={<AdminCreateProfile />} />
                 </Routes>
             </main>
             <Footer />

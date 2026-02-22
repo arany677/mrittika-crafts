@@ -53,8 +53,16 @@ html, body, #root {
 
 .nav-right {
     display: flex;
-    align-items: center; /* This keeps links and button on the same line */
+    align-items: center;
     gap: 30px;
+}
+
+/* Added for Mobile Toggle Icon */
+.menu-icon {
+    display: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #a67c52;
 }
 
 .nav-links {
@@ -71,7 +79,7 @@ html, body, #root {
         color: #333 !important;
         font-weight: 500;
         font-size: 0.95rem;
-        white-space: nowrap; /* Prevents text wrapping */
+        white-space: nowrap;
     }
 
 .sign-in-btn {
@@ -185,10 +193,11 @@ html, body, #root {
         margin-bottom: 10px;
         font-size: 0.85rem;
     }
-/* Blog Grid Layout */
+
+/* --- Blog Grid Layout --- */
 .blog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Creates the 4-column look */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 40px;
 }
@@ -200,9 +209,9 @@ html, body, #root {
 
 .blog-img-box {
     width: 100%;
-    height: 280px; /* Square-ish look like your picture */
+    height: 280px;
     overflow: hidden;
-    border-radius: 15px; /* Softer corners */
+    border-radius: 15px;
     margin-bottom: 15px;
 }
 
@@ -214,7 +223,7 @@ html, body, #root {
     }
 
 .blog-card:hover .blog-img-box img {
-    transform: scale(1.05); /* Small zoom effect */
+    transform: scale(1.05);
 }
 
 .blog-info h3 {
@@ -231,7 +240,7 @@ html, body, #root {
 
 .see-more-link {
     text-decoration: none;
-    color: #4e342e; /* Dark brown */
+    color: #4e342e;
     font-weight: 600;
     font-size: 0.9rem;
     display: inline-block;
@@ -241,3 +250,91 @@ html, body, #root {
         color: #a67c52;
         text-decoration: underline;
     }
+
+/* =============================================
+   RESPONSIVE MEDIA QUERIES (The Modification)
+   ============================================= */
+
+/* For Tablet and Small Laptops */
+@media (max-width: 1024px) {
+    .hero-content h1 {
+        font-size: 2.8rem;
+    }
+
+    .img-box {
+        width: 200px;
+        height: 320px;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* For Phones (Mobile View) */
+@media (max-width: 768px) {
+    /* Navbar Responsiveness */
+    .menu-icon {
+        display: block;
+    }
+    /* Show Hamburger */
+
+    .nav-links {
+        display: none; /* Hide links on mobile */
+        flex-direction: column;
+        position: absolute;
+        top: 65px;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        padding: 30px 0;
+        border-bottom: 2px solid #a67c52;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        z-index: 999;
+    }
+
+        .nav-links.active {
+            display: flex; /* Show links when hamburger clicked */
+        }
+
+    .user-greeting {
+        display: none;
+    }
+    /* Hide "Hi, Buyer" to save space on mobile */
+
+    /* Hero Section Responsiveness */
+    .hero {
+        flex-direction: column; /* Stack text and images */
+        text-align: center;
+        padding: 40px 0;
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+
+        .hero-content h1 {
+            font-size: 2.2rem;
+        }
+
+    .hero-images {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .img-box {
+        width: 140px;
+        height: 210px;
+        border-radius: 20px;
+    }
+
+    .stagger-down {
+        margin-top: 30px;
+    }
+
+    /* Footer Responsiveness */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
