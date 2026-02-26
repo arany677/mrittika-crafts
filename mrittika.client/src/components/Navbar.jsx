@@ -11,12 +11,16 @@ const Navbar = ({ user, onLogout }) => {
     return (
         <header className="navbar-wrapper">
             <div className="container navbar">
+                {/* --- Left Side: Logo --- */}
                 <div className="logo">
-                    <Link to="/" onClick={closeMenu}><img src="/logo.png" alt="Mrittika" /></Link>
+                    <Link to="/" onClick={closeMenu}>
+                        <img src="/logo.png" alt="Mrittika" />
+                    </Link>
                 </div>
 
+                {/* --- Right Side: Links & Auth --- */}
                 <div className="nav-right">
-                    {/* Hamburger Icon - Only visible on Mobile */}
+                    {/* Hamburger Icon - Only visible on Mobile via CSS */}
                     <div className="menu-icon" onClick={toggleMenu}>
                         {isMenuOpen ? '✕' : '☰'}
                     </div>
@@ -25,35 +29,57 @@ const Navbar = ({ user, onLogout }) => {
                         <li><Link to="/" onClick={closeMenu}>Home</Link></li>
                         <li><Link to="/blog" onClick={closeMenu}>Blog</Link></li>
 
-                        {/* Only show Dashboard if user is Admin */}
-                        {user && user.role === 'Admin' && (
-                            <li><Link to="/admin" style={{ color: 'red', fontWeight: 'bold' }} onClick={closeMenu}>Dashboard</Link></li>
-                        )}
+                        {/* --- Admin Only Links --- */}
                         {user && user.role === 'Admin' && (
                             <>
-                                <li><Link to="/admin" style={{ color: 'red' }}>Verify</Link></li>
-                                <li><Link to="/admin/profiles" style={{ color: 'red' }}>Manage Team</Link></li>
+                                <li>
+                                    <Link to="/admin" style={{ color: 'red', fontWeight: 'bold' }} onClick={closeMenu}>
+                                        Verify
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/admin/profiles" style={{ color: 'red', fontWeight: 'bold' }} onClick={closeMenu}>
+                                        Manage Team
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/admin/team-list" style={{ color: '#a67c52', fontWeight: 'bold' }} onClick={closeMenu}>
+                                        Team List
+                                    </Link>
+                                </li>
                             </>
                         )}
 
-                        {/* NEW: Only show Create Post if user is Seller */}
+                        {/* --- Seller Only Links --- */}
                         {user && user.role === 'Seller' && (
-                            <li><Link to="/create-post" style={{ color: '#a67c52', fontWeight: 'bold' }} onClick={closeMenu}>+ Create Post</Link></li>
+                            <li>
+                                <Link to="/create-post" style={{ color: '#a67c52', fontWeight: 'bold' }} onClick={closeMenu}>
+                                    + Create Post
+                                </Link>
+                            </li>
                         )}
 
                         <li><Link to="/about" onClick={closeMenu}>About us</Link></li>
                         <li><Link to="/contact" onClick={closeMenu}>Contact us</Link></li>
                     </ul>
 
-                    {/* Auth Section */}
-                    {user ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                            <span style={{ fontWeight: '600', fontSize: '0.9rem', color: '#a67c52' }} className="user-greeting">Hi, {user.name}</span>
-                            <button className="sign-in-btn" onClick={() => { onLogout(); closeMenu(); }}>Logout</button>
-                        </div>
-                    ) : (
-                        <Link to="/login" onClick={closeMenu}><button className="sign-in-btn">Sign in</button></Link>
-                    )}
+                    {/* --- Auth Section (Hi, User / Sign In) --- */}
+                    <div className="auth-section">
+                        {user ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                <span className="user-greeting" style={{ fontWeight: '600', fontSize: '0.9rem', color: '#a67c52' }}>
+                                    Hi, {user.name}
+                                </span>
+                                <button className="sign-in-btn" onClick={() => { onLogout(); closeMenu(); }}>
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <Link to="/login" onClick={closeMenu}>
+                                <button className="sign-in-btn">Sign in</button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </header>

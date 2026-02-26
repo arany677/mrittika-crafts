@@ -338,3 +338,22 @@ html, body, #root {
         text-align: center;
     }
 }
+/* Update or Add this in App.css */
+.page-title {
+    text-align: center; /* This centers the text */
+    width: 100%;
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    padding-top: 20px;
+}
+
+/* Also add this for descriptions under titles */
+.page-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+    width: 100%;
+}
