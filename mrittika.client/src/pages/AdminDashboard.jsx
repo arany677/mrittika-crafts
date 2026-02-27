@@ -55,7 +55,10 @@ const AdminDashboard = () => {
 
     // --- 2. Move useEffect to the bottom of the logic section ---
     useEffect(() => {
-        loadAllData();
+        const fetchData = async () => {
+            await loadAllData();
+        };
+        fetchData();
     }, []);
 
     // --- 3. The UI ---

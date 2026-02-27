@@ -338,3 +338,107 @@ html, body, #root {
         text-align: center;
     }
 }
+
+
+
+/* Sumona */
+/* --- Icons & Profile Dropdown Styles --- */
+.auth-nav-group {
+    display: flex;
+    align-items: center;
+    gap: 18px; /* Space between Profile, Cart and Login btn */
+    position: relative;
+}
+
+.icon-btn, .icon-btn-static {
+    font-size: 1.6rem;
+    color: #333;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .icon-btn:hover {
+        color: #a67c52;
+    }
+
+/* Cart is just for show, so no pointer if needed, or keep it for UI feel */
+.icon-btn-static {
+    cursor: default;
+}
+
+.profile-container {
+    position: relative;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 55px;
+    right: -20px;
+    width: 240px;
+    background: #d2b48c; /* Brown color */
+    /* Removed the thin black border */
+    border: none;
+    padding: 30px 20px;
+    z-index: 1001;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.profile-content .hi-text {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+.info-box {
+    background: #b57d3a;
+    color: white;
+    padding: 10px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    text-align: left;
+    /* Clean look without extra borders */
+}
+
+.welcome-msg {
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #222;
+}
+
+/* Dropdown Login Button Style */
+.auth-option-box {
+    display: block;
+    background: #4e342e;
+    color: white !important;
+    text-decoration: none;
+    padding: 12px;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+    .auth-option-box:hover {
+        background: #2b1d1a;
+    }
+
+/* Mobile responsive fixes */
+@media (max-width: 768px) {
+    .auth-nav-group {
+        gap: 12px;
+    }
+
+    .profile-dropdown {
+        right: -60px;
+    }
+
+    .nav-right {
+        gap: 15px;
+    }
+}

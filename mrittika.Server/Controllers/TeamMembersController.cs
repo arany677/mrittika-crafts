@@ -41,8 +41,8 @@ namespace mrittika.Server.Controllers
             member.Name = updated.Name;
             member.JobStatus = updated.JobStatus;
             member.Email = updated.Email;
-            member.City = updated.City;
-            member.Address = updated.Address;
+            //member.City = updated.City;
+            //member.Address = updated.Address;
             member.FbLink = updated.FbLink;
             member.InstaLink = updated.InstaLink;
             member.LinkedinLink = updated.LinkedinLink;
