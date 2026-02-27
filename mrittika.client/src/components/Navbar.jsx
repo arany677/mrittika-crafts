@@ -29,15 +29,20 @@ const Navbar = ({ user, onLogout }) => {
     return (
         <header className="navbar-wrapper">
             <div className="container navbar">
+                {/* --- Left Side: Logo --- */}
                 {/* --- Logo --- */}
                 <div className="logo">
                     <Link to="/" onClick={closeMenu}>
                         <img src="/logo.png" alt="Mrittika" />
                     </Link>
+                    <Link to="/" onClick={closeMenu}>
+                        <img src="/logo.png" alt="Mrittika" />
+                    </Link>
                 </div>
 
+                {/* --- Right Side: Links & Auth --- */}
                 <div className="nav-right">
-                    {/* Hamburger Icon for Mobile */}
+                    {/* Hamburger Icon for Mobile via CSS */}
                     <div className="menu-icon" onClick={toggleMenu}>
                         {isMenuOpen ? '✕' : '☰'}
                     </div>
@@ -48,8 +53,24 @@ const Navbar = ({ user, onLogout }) => {
                         <li><Link to="/blog" onClick={closeMenu}>Blog</Link></li>
 
                         {/* --- Admin Only Links (Part 2 থেকে সব লিঙ্ক রাখা হয়েছে) --- */}
+                        {/* --- Admin Only Links --- */}
                         {user && user.role === 'Admin' && (
                             <>
+                                <li>
+                                    <Link to="/admin" style={{ color: 'red', fontWeight: 'bold' }} onClick={closeMenu}>
+                                        Verify
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/admin/profiles" style={{ color: 'red', fontWeight: 'bold' }} onClick={closeMenu}>
+                                        Manage Team
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/admin/team-list" style={{ color: '#a67c52', fontWeight: 'bold' }} onClick={closeMenu}>
+                                        Team List
+                                    </Link>
+                                </li>
                                 <li>
                                     <Link to="/admin" style={{ color: 'red', fontWeight: 'bold' }} onClick={closeMenu}>
                                         Verify
@@ -69,11 +90,16 @@ const Navbar = ({ user, onLogout }) => {
                         )}
 
                         {/* --- Seller Only Links (Part 2 থেকে) --- */}
+                        {/* --- Seller Only Links --- */}
                         {user && user.role === 'Seller' && (
                             <li>
+                                
                                 <Link to="/create-post" style={{ color: '#a67c52', fontWeight: 'bold' }} onClick={closeMenu}>
+                                    
                                     + Create Post
+                                
                                 </Link>
+                            
                             </li>
                         )}
 
@@ -129,6 +155,23 @@ const Navbar = ({ user, onLogout }) => {
                                 </Link>
                             )}
                         </div>
+                    </div>
+                    {/* --- Auth Section (Hi, User / Sign In) --- */}
+                    <div className="auth-section">
+                        {user ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                <span className="user-greeting" style={{ fontWeight: '600', fontSize: '0.9rem', color: '#a67c52' }}>
+                                    Hi, {user.name}
+                                </span>
+                                <button className="sign-in-btn" onClick={() => { onLogout(); closeMenu(); }}>
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <Link to="/login" onClick={closeMenu}>
+                                <button className="sign-in-btn">Sign in</button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
