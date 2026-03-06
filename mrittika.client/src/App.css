@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -441,4 +441,150 @@ html, body, #root {
     .nav-right {
         gap: 15px;
     }
+}
+
+/* Update or Add this in App.css */
+.page-title {
+    text-align: center; /* This centers the text */
+    width: 100%;
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    padding-top: 20px;
+}
+
+/* Also add this for descriptions under titles */
+.page-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+/*Sumona Cart related codes here*/
+/* Cart Overlay - পুরো স্ক্রিন জুড়ে কালো ঝাপসা ভাব */
+.cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4); /* হালকা কালো শেড */
+    z-index: 9998; /* সবার উপরে থাকবে */
+}
+
+/* Cart Sidebar - ডান পাশ থেকে আসা সাদা বক্স */
+.cart-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px; /* আপনার ছবি অনুযায়ী চওড়া */
+    height: 100vh;
+    background: #ffffff;
+    z-index: 9999;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* প্যাডিং ভেতরে আলাদা করে দেওয়া হবে */
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.cart-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    font-size: 0.8rem;
+    color: #888;
+    letter-spacing: 1px;
+}
+
+.cart-items-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.cart-item-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    align-items: flex-start;
+}
+
+.cart-item-img {
+    width: 80px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.cart-item-details {
+    flex: 1;
+}
+
+    .cart-item-details h4 {
+        margin: 0 0 5px 0;
+        font-size: 0.95rem;
+        color: #333;
+        line-height: 1.4;
+    }
+
+.cart-item-price {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.qty-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    width: fit-content;
+    border-radius: 2px;
+}
+
+    .qty-control span {
+        padding: 5px 15px;
+        font-size: 0.9rem;
+    }
+
+.delete-icon {
+    color: #d32f2f;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    opacity: 0.7;
+}
+
+.cart-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    background: #fff;
+}
+
+.checkout-red-btn {
+    width: 100%;
+    padding: 16px;
+    background: #e32c2b; /* ছবির মতো লাল রঙ */
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 15px;
+    border-radius: 4px;
 }

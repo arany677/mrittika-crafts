@@ -17,5 +17,8 @@ namespace mrittika.Server.Data
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
+
+        //Sumona//
+        public DbSet<Order> Orders { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace mrittika.Server.Controllers
 
         // 1. Create Post with Image Upload (For Sellers)
         [HttpPost("create")]
-        public async Task<IActionResult> CreateBlog([FromForm] string title, [FromForm] string content, [FromForm] string authorName, [FromForm] IFormFile image)
+        public async Task<IActionResult> CreateBlog([FromForm] string title, [FromForm] string content, [FromForm] string authorName, [FromForm] IFormFile image, [FromForm] decimal price, [FromForm] int quantity, [FromForm] string selectedType)
         {
             try
             {
@@ -51,7 +51,16 @@ namespace mrittika.Server.Controllers
                     AuthorName = authorName,
                     ImageUrl = $"/uploads/{fileName}",
                     IsApproved = false, // Must be false until Admin approves
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+
+                    // Sumona //
+                    Price = price,
+                    Quantity = quantity,
+                    IsHandmadeShowpiece = (selectedType == "Handmade Clay showpiece"),
+                    IsClayCutlery = (selectedType == "Clay Cutlery")
+
+
+
                 };
 
                 _context.Blogs.Add(blog);

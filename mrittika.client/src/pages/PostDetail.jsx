@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-const PostDetail = () => {
-    const { id } = useParams(); // Gets the ID from the URL
+const PostDetail = ({ user }) => {
+    const { id } = useParams();
+    //const navigate = useNavigate();
     const [blog, setBlog] = useState(null);
+    const [buyQty, setBuyQty] = useState(1);
+    const [limitError, setLimitError] = useState("");
 
     useEffect(() => {
         fetch(`/api/blogs/${id}`)
@@ -14,22 +17,74 @@ const PostDetail = () => {
 
     if (!blog) return <div className="container" style={{ padding: '100px 0' }}>Loading...</div>;
 
+    const subtotal = buyQty * blog.price;
+
+    const handleIncrease = () => {
+        if (buyQty < blog.quantity) {
+            setBuyQty(buyQty + 1);
+            setLimitError("");
+        } else {
+            setLimitError("You have reached the available limit");
+        }
+    };
+
+    const handleDecrease = () => {
+        setBuyQty(Math.max(1, buyQty - 1));
+        setLimitError("");
+    };
+
+    const handleAddToCart = () => {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existing = cart.find(item => item.id === blog.id);
+        if (existing) {
+            existing.quantity += buyQty;
+        } else {
+            cart.push({ id: blog.id, title: blog.title, price: blog.price, quantity: buyQty, image: blog.imageUrl });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cartUpdated'));
+        alert("Added to cart!");
+    };
+
+    // handleConfirm logic removed as per request
+
     return (
         <div className="container" style={{ padding: '60px 0', minHeight: '80vh' }}>
-            <Link to="/blog" style={{ color: '#a67c52', textDecoration: 'none' }}>&larr; Back to Stories</Link>
+            <Link to="/blog" style={{ color: '#a67c52', textDecoration: 'none', fontWeight: 'bold' }}>&larr; Back to Stories</Link>
 
-            <div style={{ marginTop: '30px' }}>
-                <img
-                    src={`http://localhost:5010${blog.imageUrl}`}
-                    alt={blog.title}
-                    style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', borderRadius: '25px' }}
-                />
-                <h1 style={{ fontSize: '3rem', margin: '30px 0 10px', color: '#222' }}>{blog.title}</h1>
-                <p style={{ color: '#a67c52', fontWeight: '600' }}>By: {blog.authorName}</p>
-                <hr style={{ margin: '30px 0', opacity: 0.1 }} />
-                <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: '#444', whiteSpace: 'pre-wrap' }}>
-                    {blog.content}
-                </p>
+            <div style={{ display: 'flex', gap: '50px', marginTop: '30px', flexWrap: 'wrap' }}>
+                <div style={{ flex: 2 }}>
+                    <img src={`http://localhost:5010${blog.imageUrl}`} alt={blog.title}
+                        style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', borderRadius: '25px' }} />
+                    <h1 style={{ fontSize: '2.5rem', margin: '20px 0 10px' }}>{blog.title}</h1>
+                    <p style={{ color: '#a67c52' }}>By: {blog.authorName}</p>
+                    <hr style={{ margin: '30px 0', opacity: 0.1 }} />
+                    <p style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>{blog.content}</p>
+                </div>
+
+                {user && user.role === 'Buyer' && (
+                    <div style={{ flex: 1, background: '#fcf8f5', padding: '35px', borderRadius: '25px', height: 'fit-content', border: '1px solid #eee' }}>
+                        <h2 style={{ color: '#5d3111', margin: '0 0 10px 0' }}>Price: BDT {blog.price}</h2>
+                        <p>Stock: <strong style={{ color: '#28a745' }}>{blog.quantity}</strong></p>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '20px 0' }}>
+                            <button onClick={handleDecrease} className="qty-btn-custom">-</button>
+                            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{buyQty}</span>
+                            <button onClick={handleIncrease} className="qty-btn-custom">+</button>
+                        </div>
+
+                        {limitError && <p style={{ color: 'red', fontSize: '0.8rem', margin: '-15px 0 15px 0' }}>{limitError}</p>}
+
+                        <div style={{ background: '#5d3111', color: 'white', padding: '15px', borderRadius: '10px', textAlign: 'center', marginBottom: '20px' }}>
+                            Subtotal: <strong>{subtotal} BDT</strong>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <button onClick={handleAddToCart} className="action-btn cart-btn">Add to cart</button>
+                            {/* Confirm Purchase button removed */}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

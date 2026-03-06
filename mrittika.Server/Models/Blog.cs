@@ -9,5 +9,11 @@
         public string ImageUrl { get; set; } = string.Empty;
         public bool IsApproved { get; set; } = false; // Default false for Admin review
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        //Sumona//
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+        public bool IsHandmadeShowpiece { get; set; }
+        public bool IsClayCutlery { get; set; }
     }
 }
