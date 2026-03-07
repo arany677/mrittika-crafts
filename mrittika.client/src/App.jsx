@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 
-// Import Components
+// Components & Pages
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
-
-// Import Pages
 import Home from './pages/Home.jsx';
 import Blog from './pages/Blog.jsx';
 import About from './pages/About.jsx';
@@ -17,19 +15,11 @@ import CreatePost from './pages/CreatePost';
 import PostDetail from './pages/PostDetail';
 import AdminCreateProfile from './pages/AdminCreateProfile';
 import TeamList from './pages/TeamList';
+import SellerOrders from './pages/SellerOrders';
 
-// --- PROTECTED ROUTE COMPONENT ---
 const ProtectedRoute = ({ user, allowedRoles, children }) => {
-    if (!user) {
-        // Not logged in -> Kick to login
-        return <Navigate to="/login" replace />;
-    }
-
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
-        // Logged in but wrong role -> Kick to home
-        return <Navigate to="/" replace />;
-    }
-
+    if (!user) return <Navigate to="/login" replace />;
+    if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
     return children;
 };
 
@@ -37,16 +27,19 @@ function App() {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Fix: Load user from sessionStorage immediately
+    const [user, setUser] = useState(() => {
+        const savedUser = sessionStorage.getItem('mrittika_user');
+        try {
+            return savedUser ? JSON.parse(savedUser) : null;
+        } catch {
+            return null;
+        }
+    });
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [location]);
-
-    // --- SECURITY FIX: Use sessionStorage instead of localStorage ---
-    // This ensures that when the tab is closed, the user is automatically logged out.
-    const [user, setUser] = useState(() => {
-        const savedUser = sessionStorage.getItem('mrittika_user');
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
 
     const handleLogin = (userData) => {
         setUser(userData);
@@ -64,44 +57,46 @@ function App() {
             <Navbar user={user} onLogout={handleLogout} />
             <main className="main-content">
                 <Routes>
-                    {/* Public Routes */}
                     <Route path="/" element={<Home />} />
                     <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:id" element={<PostDetail user={user} />} /> 
+                    <Route path="/blog/:id" element={<PostDetail user={user} />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
 
-                    {/* Login Route: Redirect if already logged in */}
-                    <Route path="/login" element={
-                        user ? <Navigate to="/" replace /> : <Login onLoginSuccess={handleLogin} />
-                    } />
+                    {/* Only show Login if NOT logged in */}
+                    <Route path="/login" element={user ? <Navigate to="/" /> : <Login onLoginSuccess={handleLogin} />} />
 
-                    {/* Admin Only Routes */}
+                    {/* Protected Admin Routes */}
                     <Route path="/admin" element={
                         <ProtectedRoute user={user} allowedRoles={['Admin']}>
                             <AdminDashboard />
                         </ProtectedRoute>
                     } />
+
                     <Route path="/admin/profiles" element={
                         <ProtectedRoute user={user} allowedRoles={['Admin']}>
                             <AdminCreateProfile />
                         </ProtectedRoute>
                     } />
+
                     <Route path="/admin/team-list" element={
                         <ProtectedRoute user={user} allowedRoles={['Admin']}>
                             <TeamList />
                         </ProtectedRoute>
                     } />
 
-                    {/* Seller Only Routes */}
+                    {/* Protected Seller Route */}
                     <Route path="/create-post" element={
                         <ProtectedRoute user={user} allowedRoles={['Seller']}>
                             <CreatePost user={user} />
                         </ProtectedRoute>
                     } />
-
-                    {/* Catch all - Redirect to Home */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                    {/* Inside <Routes> */}
+                    <Route path="/seller/orders" element={
+                        <ProtectedRoute user={user} allowedRoles={['Seller']}>
+                            <SellerOrders user={user} />
+                        </ProtectedRoute>
+                    } />
                 </Routes>
             </main>
             <Footer />

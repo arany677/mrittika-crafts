@@ -19,26 +19,32 @@ namespace mrittika.Server.Controllers
         }
 
         // 1. Create Post with Image Upload (For Sellers)
+        // 1. Create Post with Image Upload (For Sellers)
         [HttpPost("create")]
-        public async Task<IActionResult> CreateBlog([FromForm] string title, [FromForm] string content, [FromForm] string authorName, [FromForm] IFormFile image, [FromForm] decimal price, [FromForm] int quantity, [FromForm] string selectedType)
+        public async Task<IActionResult> CreateBlog(
+            [FromForm] string title,
+            [FromForm] string content,
+            [FromForm] string authorName,
+            [FromForm] string authorEmail, // ADDED THIS PARAMETER
+            [FromForm] IFormFile image,
+            [FromForm] decimal price,
+            [FromForm] int quantity,
+            [FromForm] string selectedType)
         {
             try
             {
                 if (image == null || image.Length == 0)
                     return BadRequest(new { message = "Image is mandatory." });
 
-                // Ensure wwwroot/uploads directory exists
                 string webRootPath = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
                 var uploadsPath = Path.Combine(webRootPath, "uploads");
 
                 if (!Directory.Exists(uploadsPath))
                     Directory.CreateDirectory(uploadsPath);
 
-                // Generate unique filename
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
                 var filePath = Path.Combine(uploadsPath, fileName);
 
-                // Save file to disk
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await image.CopyToAsync(stream);
@@ -49,18 +55,14 @@ namespace mrittika.Server.Controllers
                     Title = title,
                     Content = content,
                     AuthorName = authorName,
+                    AuthorEmail = authorEmail, // SAVING THE EMAIL HERE
                     ImageUrl = $"/uploads/{fileName}",
-                    IsApproved = false, // Must be false until Admin approves
+                    IsApproved = false,
                     CreatedAt = DateTime.Now,
-
-                    // Sumona //
                     Price = price,
                     Quantity = quantity,
                     IsHandmadeShowpiece = (selectedType == "Handmade Clay showpiece"),
                     IsClayCutlery = (selectedType == "Clay Cutlery")
-
-
-
                 };
 
                 _context.Blogs.Add(blog);

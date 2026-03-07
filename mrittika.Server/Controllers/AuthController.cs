@@ -39,25 +39,26 @@ namespace mrittika.Server.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            // Admin Check - এখানে email যোগ করা হয়েছে
+            // 1. Check Hardcoded Admin
             if (request.Email == "admin@mrittika.com" && request.Password == "admin6240")
+            {
                 return Ok(new { name = "Admin", role = "Admin", email = "admin@mrittika.com" });
+            }
 
+            // 2. Check Database Users
             var user = _context.Users.FirstOrDefault(u => u.Email == request.Email && u.Password == request.Password);
 
             if (user == null)
+            {
                 return Unauthorized(new { message = "Invalid email or password." });
+            }
 
             if (user.Role == "Seller" && !user.IsVerified)
-                return BadRequest(new { message = "Pending Admin approval." });
-
-            // Regular User return - এখানে user.Email যোগ করা হয়েছে
-            return Ok(new
             {
-                name = user.Name,
-                role = user.Role,
-                email = user.Email // এই লাইনটি যোগ করা হয়েছে
-            });
+                return BadRequest(new { message = "Pending Admin approval." });
+            }
+
+            return Ok(new { name = user.Name, role = user.Role, email = user.Email });
         }
 
         [HttpGet("pending-sellers")]

@@ -1,67 +1,62 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using mrittika.Server.Data;
 using Microsoft.EntityFrameworkCore;
-using mrittika.Server.Data; // আপনার DbContext এর লোকেশন অনুযায়ী এটি চেক করে নিন
-using mrittika.Server.Models;
 
 namespace mrittika.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrdersController : ControllerBase // এখানে : ControllerBase যোগ করা হয়েছে
+    public class OrdersController : ControllerBase
     {
-        private readonly ApplicationDbContext _context; // ডাটাবেস কানেকশন ভেরিয়েবল
+        private readonly ApplicationDbContext _context;
+        public OrdersController(ApplicationDbContext context) { _context = context; }
 
-        // কনস্ট্রাক্টর এর মাধ্যমে ডাটাবেস ইনজেক্ট করা
-        public OrdersController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
+        // 1. Existing Confirm Order method...
         [HttpPost("confirm")]
-        public async Task<IActionResult> ConfirmOrder([FromBody] OrderDto dto)
+        public async Task<IActionResult> ConfirmOrder([FromBody] mrittika.Server.Models.Order order)
         {
             try
             {
-                // ১. ব্লগ বা প্রোডাক্ট খুঁজে বের করা
-                var product = await _context.Blogs.FindAsync(dto.BlogId);
-                if (product == null)
-                    return NotFound(new { message = "Product not found" });
-
-                // ২. স্টক চেক করা
-                if (product.Quantity < dto.Quantity)
-                    return BadRequest(new { message = "Not enough stock!" });
-
-                // ৩. স্টক কমানো
-                product.Quantity -= dto.Quantity;
-
-                // ৪. নতুন অর্ডার অবজেক্ট তৈরি করা (এটি ডাটাবেস মডেলের সাথে মিলবে)
-                var order = new Order
-                {
-                    UserId = dto.UserId,
-                    BlogId = dto.BlogId,
-                    Quantity = dto.Quantity,
-                    TotalPrice = dto.TotalPrice,
-                    OrderDate = DateTime.Now
-                };
-
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
+                return Ok(new { message = "Order successfully placed!" });
+            }
+            catch (Exception ex) { return StatusCode(500, ex.Message); }
+        }
 
-                return Ok(new { message = "Purchase Successful!" });
+        // 2. NEW: Get orders for a specific seller
+        [HttpGet("seller-notifications/{email}")]
+        public IActionResult GetSellerOrders(string email)
+        {
+            try
+            {
+                // 1. Get all items belonging to this seller
+                var items = _context.OrderItems
+                    .Where(i => i.SellerEmail.ToLower() == email.ToLower())
+                    .ToList();
+
+                // 2. For each item, find the parent order information (Buyer info)
+                var result = items.Select(item => {
+                    var parentOrder = _context.Orders.FirstOrDefault(o => o.Id == item.OrderId);
+                    return new
+                    {
+                        item.ProductName,
+                        item.Quantity,
+                        item.Price,
+                        BuyerEmail = parentOrder?.BuyerEmail ?? "Unknown Buyer",
+                        Location = parentOrder?.Location ?? "No Location Provided",
+                        Phone = parentOrder?.ContactNumber ?? "No Phone Provided",
+                        OrderDate = parentOrder?.OrderDate ?? DateTime.Now
+                    };
+                }).OrderByDescending(x => x.OrderDate).ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+                // If it crashes, this tells us why in the browser's Network tab
+                return StatusCode(500, new { message = ex.Message });
             }
         }
-    }
-
-    // এটি OrdersController.cs এর নিচে যোগ করুন
-    public class OrderDto
-    {
-        public int UserId { get; set; }
-        public int BlogId { get; set; }
-        public int Quantity { get; set; }
-        public decimal TotalPrice { get; set; }
     }
 }

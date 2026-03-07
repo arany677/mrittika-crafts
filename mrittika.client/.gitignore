@@ -1,4 +1,4 @@
-# Visual Studio junk
+# Visual Studio Junk
 .vs/
 [Bb]in/
 [Oo]bj/
@@ -6,13 +6,13 @@
 *.suo
 *.sln.docstates
 
-# Node/React junk
+# Node/React Junk
 node_modules/
 dist/
 dist-ssr/
 npm-debug.log*
 
-# Database & Uploads (Teammates should create their own)
+# Database & Storage
 *.mdf
 *.ldf
 wwwroot/uploads/*

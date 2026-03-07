@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 
 const PostDetail = ({ user }) => {
     const { id } = useParams();
-    //const navigate = useNavigate();
     const [blog, setBlog] = useState(null);
     const [buyQty, setBuyQty] = useState(1);
     const [limitError, setLimitError] = useState("");
@@ -33,20 +32,40 @@ const PostDetail = ({ user }) => {
         setLimitError("");
     };
 
-    const handleAddToCart = () => {
+    const handleConfirm = () => {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const existing = cart.find(item => item.id === blog.id);
-        if (existing) {
-            existing.quantity += buyQty;
+
+        const existingIndex = cart.findIndex(item => item.id === blog.id);
+
+        const cartItem = {
+            id: blog.id,
+            title: blog.title,
+            price: blog.price,
+            quantity: buyQty,
+            image: blog.imageUrl,
+            sellerEmail: blog.authorEmail // CRITICAL: Links order to seller
+        };
+
+        if (existingIndex > -1) {
+            cart[existingIndex].quantity += buyQty;
         } else {
-            cart.push({ id: blog.id, title: blog.title, price: blog.price, quantity: buyQty, image: blog.imageUrl });
+            cart.push(cartItem);
         }
+
         localStorage.setItem('cart', JSON.stringify(cart));
-        window.dispatchEvent(new Event('cartUpdated'));
-        alert("Added to cart!");
+        window.dispatchEvent(new Event('cartUpdated')); // Update Navbar Icon
+        alert("Added to cart! Click the cart icon to complete purchase.");
     };
 
-    // handleConfirm logic removed as per request
+    const qtyBtnStyle = {
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        border: '2px solid #000',
+        width: '45px', height: '45px',
+        borderRadius: '50%', fontSize: '1.5rem',
+        fontWeight: 'bold', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+    };
 
     return (
         <div className="container" style={{ padding: '60px 0', minHeight: '80vh' }}>
@@ -56,33 +75,31 @@ const PostDetail = ({ user }) => {
                 <div style={{ flex: 2 }}>
                     <img src={`http://localhost:5010${blog.imageUrl}`} alt={blog.title}
                         style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', borderRadius: '25px' }} />
-                    <h1 style={{ fontSize: '2.5rem', margin: '20px 0 10px' }}>{blog.title}</h1>
+                    <h1 style={{ fontSize: '2.5rem', margin: '20px 0 10px', color: '#000' }}>{blog.title}</h1>
                     <p style={{ color: '#a67c52' }}>By: {blog.authorName}</p>
                     <hr style={{ margin: '30px 0', opacity: 0.1 }} />
-                    <p style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>{blog.content}</p>
+                    <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333' }}>{blog.content}</p>
                 </div>
 
                 {user && user.role === 'Buyer' && (
                     <div style={{ flex: 1, background: '#fcf8f5', padding: '35px', borderRadius: '25px', height: 'fit-content', border: '1px solid #eee' }}>
                         <h2 style={{ color: '#5d3111', margin: '0 0 10px 0' }}>Price: BDT {blog.price}</h2>
-                        <p>Stock: <strong style={{ color: '#28a745' }}>{blog.quantity}</strong></p>
+                        <p style={{ color: '#666' }}>Stock: <strong style={{ color: '#28a745' }}>{blog.quantity}</strong></p>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', margin: '20px 0' }}>
-                            <button onClick={handleDecrease} className="qty-btn-custom">-</button>
-                            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{buyQty}</span>
-                            <button onClick={handleIncrease} className="qty-btn-custom">+</button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '25px', margin: '25px 0' }}>
+                            <button onClick={handleDecrease} style={qtyBtnStyle}>-</button>
+                            <span style={{ fontSize: '1.8rem', fontWeight: '800', color: '#000' }}>{buyQty}</span>
+                            <button onClick={handleIncrease} style={qtyBtnStyle}>+</button>
                         </div>
 
-                        {limitError && <p style={{ color: 'red', fontSize: '0.8rem', margin: '-15px 0 15px 0' }}>{limitError}</p>}
+                        {limitError && <p style={{ color: 'red', fontSize: '0.8rem', marginBottom: '15px' }}>{limitError}</p>}
 
                         <div style={{ background: '#5d3111', color: 'white', padding: '15px', borderRadius: '10px', textAlign: 'center', marginBottom: '20px' }}>
                             Subtotal: <strong>{subtotal} BDT</strong>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <button onClick={handleAddToCart} className="action-btn cart-btn">Add to cart</button>
-                            {/* Confirm Purchase button removed */}
-                        </div>
+                        {/* RENAME TO CONFIRM */}
+                        <button onClick={handleConfirm} className="action-btn cart-btn">Confirm</button>
                     </div>
                 )}
             </div>

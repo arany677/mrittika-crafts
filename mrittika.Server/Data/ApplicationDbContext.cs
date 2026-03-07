@@ -20,5 +20,6 @@ namespace mrittika.Server.Data
 
         //Sumona//
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; } 
     }
 }
