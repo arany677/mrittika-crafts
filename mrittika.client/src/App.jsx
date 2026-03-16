@@ -33,13 +33,17 @@ function App() {
     const navigate = useNavigate();
 
     // Load user from sessionStorage immediately to maintain state on refresh
+    // Inside App.jsx
     const [user, setUser] = useState(() => {
         const savedUser = sessionStorage.getItem('mrittika_user');
-        try {
-            return savedUser ? JSON.parse(savedUser) : null;
-        } catch {
-            return null;
+        if (savedUser) {
+            try {
+                return JSON.parse(savedUser);
+            } catch (e) {
+                return null;
+            }
         }
+        return null;
     });
 
     // Auto-scroll to top on route change

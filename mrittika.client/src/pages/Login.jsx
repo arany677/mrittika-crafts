@@ -95,7 +95,7 @@ const Login = ({ onLoginSuccess }) => {
                     {isLogin ? 'Enter your credentials to continue' : 'Please fill in your details'}
                 </p>
 
-                <form className="auth-form" onSubmit={handleSubmit}>
+                <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
                     {!isLogin && (
                         <input
                             type="text"
