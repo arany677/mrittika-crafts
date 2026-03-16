@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 
-// Components & Pages
+// Components
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
+
+// Pages
 import Home from './pages/Home.jsx';
 import Blog from './pages/Blog.jsx';
 import About from './pages/About.jsx';
-import Contact from './pages/Contact.jsx';
+import Contact from './pages/Contact.jsx'; // Standard Contact for Admin/Buyer/Seller
+import AskAnything from './pages/AskAnything.jsx'; // AI Chatbot for Users/Guests
 import Login from './pages/Login.jsx';
 import AdminDashboard from './pages/AdminDashboard';
 import CreatePost from './pages/CreatePost';
@@ -16,7 +19,9 @@ import PostDetail from './pages/PostDetail';
 import AdminCreateProfile from './pages/AdminCreateProfile';
 import TeamList from './pages/TeamList';
 import SellerOrders from './pages/SellerOrders';
+import NotificationPage from './pages/NotificationPage';
 
+// Component to protect routes based on login status and roles
 const ProtectedRoute = ({ user, allowedRoles, children }) => {
     if (!user) return <Navigate to="/login" replace />;
     if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
@@ -27,7 +32,7 @@ function App() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Fix: Load user from sessionStorage immediately
+    // Load user from sessionStorage immediately to maintain state on refresh
     const [user, setUser] = useState(() => {
         const savedUser = sessionStorage.getItem('mrittika_user');
         try {
@@ -37,6 +42,7 @@ function App() {
         }
     });
 
+    // Auto-scroll to top on route change
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [location]);
@@ -55,18 +61,39 @@ function App() {
     return (
         <div className="App">
             <Navbar user={user} onLogout={handleLogout} />
+
             <main className="main-content">
                 <Routes>
+                    {/* Public Routes */}
                     <Route path="/" element={<Home />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/blog/:id" element={<PostDetail user={user} />} />
                     <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
 
-                    {/* Only show Login if NOT logged in */}
-                    <Route path="/login" element={user ? <Navigate to="/" /> : <Login onLoginSuccess={handleLogin} />} />
+                    {/* 
+                        DYNAMIC CONTACT ROUTE:
+                        - If Guest or Role is 'User' -> Show AI Chatbot (AskAnything)
+                        - If Admin, Buyer, or Seller -> Show Contact Form
+                    */}
+                    <Route path="/contact" element={
+                        (!user || user.role === 'User')
+                            ? <AskAnything />
+                            : <Contact user={user} />
+                    } />
 
-                    {/* Protected Admin Routes */}
+                    {/* Shared Protected Route */}
+                    <Route path="/notifications" element={
+                        <ProtectedRoute user={user}>
+                            <NotificationPage user={user} />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Auth Route */}
+                    <Route path="/login" element={
+                        user ? <Navigate to="/" /> : <Login onLoginSuccess={handleLogin} />
+                    } />
+
+                    {/* --- ADMIN PROTECTED ROUTES --- */}
                     <Route path="/admin" element={
                         <ProtectedRoute user={user} allowedRoles={['Admin']}>
                             <AdminDashboard />
@@ -85,20 +112,31 @@ function App() {
                         </ProtectedRoute>
                     } />
 
-                    {/* Protected Seller Route */}
+                    {/* ADMIN REPLY ROUTE: Replaces contact page when replying to a message */}
+                    <Route path="/admin/reply/:replyId" element={
+                        <ProtectedRoute user={user} allowedRoles={['Admin']}>
+                            <Contact user={user} isAdminReply={true} />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* --- SELLER PROTECTED ROUTES --- */}
                     <Route path="/create-post" element={
                         <ProtectedRoute user={user} allowedRoles={['Seller']}>
                             <CreatePost user={user} />
                         </ProtectedRoute>
                     } />
-                    {/* Inside <Routes> */}
+
                     <Route path="/seller/orders" element={
                         <ProtectedRoute user={user} allowedRoles={['Seller']}>
                             <SellerOrders user={user} />
                         </ProtectedRoute>
                     } />
+
+                    {/* Fallback redirect */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </main>
+
             <Footer />
         </div>
     );

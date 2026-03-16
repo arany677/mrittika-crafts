@@ -1,10 +1,11 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUserCircle, FaShoppingCart } from 'react-icons/fa';
+import NotificationBell from './NotificationBell'; // Integrated as requested
 
 const Navbar = ({ user, onLogout }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isProfileOpen, setIsProfileOpen] = useState(false); // Controls the welcome dropdown
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [shippingInfo, setShippingInfo] = useState({ location: '', phone: '', isCod: false });
@@ -32,7 +33,7 @@ const Navbar = ({ user, onLogout }) => {
     }, []);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const toggleProfile = () => setIsProfileOpen(!isProfileOpen); // Toggle welcome dropdown
+    const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
     const toggleCart = () => setIsCartOpen(!isCartOpen);
     const closeMenu = () => {
         setIsMenuOpen(false);
@@ -87,9 +88,12 @@ const Navbar = ({ user, onLogout }) => {
                 setShowModal(false);
                 setIsCartOpen(false);
                 navigate('/blog');
+            } else {
+                alert("Failed to confirm order. Please try again.");
             }
         } catch (err) {
-            alert("Connection error");
+            console.error(err);
+            alert("Connection error occurred while confirming order.");
         }
     };
 
@@ -124,7 +128,7 @@ const Navbar = ({ user, onLogout }) => {
                         <li><Link to="/contact" onClick={closeMenu}>Contact us</Link></li>
                     </ul>
 
-                    <div className="auth-nav-group">
+                    <div className="auth-nav-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         {/* --- PROFILE ICON & DROPDOWN --- */}
                         <div style={{ position: 'relative' }}>
                             <button className="icon-btn" onClick={toggleProfile} style={{ fontSize: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: '#a67c52' }}>
@@ -156,6 +160,9 @@ const Navbar = ({ user, onLogout }) => {
                                 {cartItems.length > 0 && <span className="cart-badge">{cartItems.length}</span>}
                             </div>
                         )}
+
+                        {/* --- NOTIFICATION BELL (ONLY FOR LOGGED IN USERS) --- */}
+                        {user && <NotificationBell />}
 
                         {user ? (
                             <button className="sign-in-btn" onClick={() => { onLogout(); closeMenu(); navigate('/'); }}>Logout</button>
