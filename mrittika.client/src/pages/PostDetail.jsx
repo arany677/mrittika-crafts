@@ -86,6 +86,15 @@ const PostDetail = ({ user }) => {
                         <h2 style={{ color: '#5d3111', margin: '0 0 10px 0' }}>Price: BDT {blog.price}</h2>
                         <p style={{ color: '#666' }}>Stock: <strong style={{ color: '#28a745' }}>{blog.quantity}</strong></p>
 
+                        
+
+                        {/* নতুন যোগ করা কোড: টাইপ দেখানোর জন্য */}
+                        {/* এই অংশটুকু যোগ করুন */}
+                        <p style={{ color: '#666' }}>Category: <strong style={{ color: '#5d3111' }}>
+                            {blog.isHandmadeShowpiece ? "Handmade Clay showpiece" :
+                                blog.isClayCutlery ? "Clay Cutlery" : "General"}
+                        </strong></p>
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: '25px', margin: '25px 0' }}>
                             <button onClick={handleDecrease} style={qtyBtnStyle}>-</button>
                             <span style={{ fontSize: '1.8rem', fontWeight: '800', color: '#000' }}>{buyQty}</span>

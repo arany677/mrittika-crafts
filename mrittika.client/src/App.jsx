@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 
@@ -10,8 +10,8 @@ import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Blog from './pages/Blog.jsx';
 import About from './pages/About.jsx';
-import Contact from './pages/Contact.jsx'; // Standard Contact for Admin/Buyer/Seller
-import AskAnything from './pages/AskAnything.jsx'; // AI Chatbot for Users/Guests
+import Contact from './pages/Contact.jsx';
+import AskAnything from './pages/AskAnything.jsx';
 import Login from './pages/Login.jsx';
 import AdminDashboard from './pages/AdminDashboard';
 import CreatePost from './pages/CreatePost';
@@ -20,6 +20,7 @@ import AdminCreateProfile from './pages/AdminCreateProfile';
 import TeamList from './pages/TeamList';
 import SellerOrders from './pages/SellerOrders';
 import NotificationPage from './pages/NotificationPage';
+import SellerProfile from './pages/SellerProfile'; // ইমপোর্ট নিশ্চিত করা হয়েছে
 
 // Component to protect routes based on login status and roles
 const ProtectedRoute = ({ user, allowedRoles, children }) => {
@@ -33,13 +34,13 @@ function App() {
     const navigate = useNavigate();
 
     // Load user from sessionStorage immediately to maintain state on refresh
-    // Inside App.jsx
     const [user, setUser] = useState(() => {
         const savedUser = sessionStorage.getItem('mrittika_user');
         if (savedUser) {
             try {
                 return JSON.parse(savedUser);
-            } catch (e) {
+            } catch {
+                // 'e' সরিয়ে দেওয়া হয়েছে ESLint এরর ফিক্স করতে
                 return null;
             }
         }
@@ -74,11 +75,7 @@ function App() {
                     <Route path="/blog/:id" element={<PostDetail user={user} />} />
                     <Route path="/about" element={<About />} />
 
-                    {/* 
-                        DYNAMIC CONTACT ROUTE:
-                        - If Guest or Role is 'User' -> Show AI Chatbot (AskAnything)
-                        - If Admin, Buyer, or Seller -> Show Contact Form
-                    */}
+                    {/* DYNAMIC CONTACT ROUTE */}
                     <Route path="/contact" element={
                         (!user || user.role === 'User')
                             ? <AskAnything />
@@ -116,7 +113,6 @@ function App() {
                         </ProtectedRoute>
                     } />
 
-                    {/* ADMIN REPLY ROUTE: Replaces contact page when replying to a message */}
                     <Route path="/admin/reply/:replyId" element={
                         <ProtectedRoute user={user} allowedRoles={['Admin']}>
                             <Contact user={user} isAdminReply={true} />
@@ -136,7 +132,14 @@ function App() {
                         </ProtectedRoute>
                     } />
 
-                    {/* Fallback redirect */}
+                    {/* NEW: Seller Profile Route (Added inside protection) */}
+                    <Route path="/seller-profile" element={
+                        <ProtectedRoute user={user} allowedRoles={['Seller']}>
+                            <SellerProfile user={user} />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Fallback redirect - This MUST be the last route */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </main>

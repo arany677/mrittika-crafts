@@ -1,7 +1,17 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using mrittika.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // আপনার রিয়েক্ট অ্যাপের URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 // 1. Add services
 builder.Services.AddControllers();
@@ -14,11 +24,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
+
 // 2. Middleware
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+app.UseCors("AllowReactApp");
 app.MapControllers();
 
 // 3. SEEDING/MIGRATION CHECK

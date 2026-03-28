@@ -65,12 +65,21 @@ const Navbar = ({ user, onLogout }) => {
             location: shippingInfo.location,
             contactNumber: shippingInfo.phone,
             totalAmount: estimatedTotal,
-            orderItems: cartItems.map(item => ({
+            /*orderItems: cartItems.map(item => ({
                 productId: item.id,
                 productName: item.title,
                 quantity: item.quantity,
                 price: item.price,
                 sellerEmail: item.sellerEmail
+            }))*/
+
+            orderItems: cartItems.map(item => ({
+                productId: item.id,
+                productName: item.title,
+                quantity: item.quantity,
+                price: item.price,
+                // authorEmail অথবা sellerEmail যেটা ই থাকুক সেটা নেবে
+                sellerEmail: item.authorEmail || item.sellerEmail || ""
             }))
         };
 
@@ -144,7 +153,38 @@ const Navbar = ({ user, onLogout }) => {
                                     {user ? (
                                         <>
                                             <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>Welcome back!</p>
-                                            <p style={{ margin: '0 0 10px 0', color: '#a67c52', fontSize: '0.9rem' }}>{user.name}</p>
+
+                                            {/* যদি সেলার হয়, তবে তার নামে ক্লিক করলে প্রোফাইল পেজে যাবে */}
+                                            {user.role === 'Seller' ? (
+                                                <Link
+                                                    to="/seller-profile"
+                                                    onClick={closeMenu}
+                                                    style={{
+                                                        textDecoration: 'none',
+                                                        color: '#a67c52',
+                                                        fontWeight: 'bold',
+                                                        display: 'flex',        /* ফ্লেক্স ব্যবহার করা হয়েছে */
+                                                        flexDirection: 'column', /* কলাম হিসেবে সাজানো হয়েছে যাতে নিচে নিচে আসে */
+                                                        marginBottom: '10px',
+                                                        fontSize: '1rem',
+                                                        borderBottom: '1px solid #eee',
+                                                        paddingBottom: '5px'
+                                                    }}
+                                                >
+                                                    <span>{user.name}</span>
+                                                    <span style={{
+                                                        fontSize: '1rem',
+                                                        fontWeight: 'bold',
+                                                        color: '#a67c52',
+                                                        textDecoration: 'underline'
+                                                    }}>
+                                                        (Profile)
+                                                    </span>
+                                                </Link>
+                                            ) : (
+                                                <p style={{ margin: '0 0 10px 0', color: '#a67c52', fontSize: '0.9rem' }}>{user.name}</p>
+                                            )}
+
                                             <p style={{ margin: 0, fontSize: '0.75rem', color: '#999' }}>Role: {user.role}</p>
                                         </>
                                     ) : (

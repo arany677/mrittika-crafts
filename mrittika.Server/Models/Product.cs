@@ -15,5 +15,7 @@ namespace mrittika.Server.Models
         public string Category { get; set; } = string.Empty;
         public string ArtisanName { get; set; } = string.Empty;
         public bool IsApproved { get; set; } = true;
+
+        public string SellerEmail { get; set; } = string.Empty; // এই লাইনটি যোগ করুন
     }
 }
