@@ -10,7 +10,7 @@ namespace mrittika.Server.Controllers
     public class ChatbotController : ControllerBase
     {
         // 1. Using the STABLE API Key you provided
-        private const string ApiKey = "AIzaSyDyIECvk2xcGm9HcjFr3GTAlCOkTPKSa9s";
+        private const string ApiKey = "Paste your API_KEY Here";
 
         // 2. FIXED URL: Using 'v1' and 'gemini-pro' (Most stable version)
         private const string GeminiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + ApiKey;
