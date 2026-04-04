@@ -27,10 +27,15 @@ const NotificationPage = ({ user }) => {
     }, [user]);
 
     const handleAction = (msg) => {
-        if (user.role === 'Admin') {
-            navigate(`/admin/reply/${msg.id}`);
+        // MARK AS READ LOGIC
+        axios.post(`/api/contact/mark-as-read/${user.role}/${user.email}`);
+
+        if (msg.category === "Like" || msg.category === "Comment") {
+            // Navigate to the post
+            navigate(`/blog/${msg.targetBlogId}`);
         } else {
-            navigate(`/contact`);
+            // Existing Contact Logic
+            user.role === 'Admin' ? navigate(`/admin/reply/${msg.id}`) : navigate(`/contact`);
         }
     };
 

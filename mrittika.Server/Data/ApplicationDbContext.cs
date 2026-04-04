@@ -18,7 +18,8 @@ namespace mrittika.Server.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
-
+        public DbSet<BlogLike> BlogLikes { get; set; }
+        public DbSet<BlogComment> BlogComments { get; set; }
 
         // This method is called when the database is being created.
         // We use it to configure column types that EF can't guess automatically.
